@@ -3,23 +3,39 @@ import './App.css';
 
 function App() {
 
-  const [data, setData] = useState([]);
-	const weather_API =
-		"https://api.openweathermap.org/data/2.5/weather?lat=37.55&lon=126.99&appid=0392c2de4574d49fb4740fd4559aa5d2";
 
-	useEffect(() => {
-		async function fetchData() {
-			const response = await fetch(weather_API);
-			const data = await response.json();
-			setData(data.results);
+
+	const [info, setInfo] = useState([]);
+
+	useEffect(()=>{
+		const apiKEY = process.env.REACT_APP_API_KEY;
+		const getData = () => {
+			fetch(`https://api.openweathermap.org/data/2.5/weather?lat=37.55&lon=126.99&appid=${apiKEY}`)
+			.then((res) => {
+				return res.json();
+			})
+			.then((data) => {
+				console.log(data);
+				setInfo(data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 		}
-		fetchData();
-	}, []);
+		getData();
+	}, [])
+
+	console.log(info.name, 'info');
 
   return (
     <div className="App">
-      {/* https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key} */}
-      
+			<div>
+				<h1>{info.name}</h1>
+				<h2>{info.id}</h2>
+				{info.weather?.map((detail) => (
+					<img key={detail.id} src={`https://openweathermap.org/img/wn/${detail.icon}@4x.png`} alt={detail.description} />
+				))}
+			</div>
     </div>
   );
 }
